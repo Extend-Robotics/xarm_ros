@@ -1,0 +1,16 @@
+<launch>
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+    <arg name="address" value="10.8.0.12" />
+  </include>
+
+  <!-- <include file="$(find extendArm_Gazebo)/launch/extendArm_gazebo_v21.launch">
+  </include> -->
+
+  <include file="$(find xarm6_moveit_config)/launch/demo.launch">
+  </include>
+  
+  <node name="bio_ik_service" pkg="bio_ik_service" type="bio_ik_service" output="screen" respawn="true" />
+  <node name="bio_ik_solver" pkg="bio_ik_service_examples" type="get_bio_xarm.py" output="screen" respawn="true" /> 
+
+</launch>

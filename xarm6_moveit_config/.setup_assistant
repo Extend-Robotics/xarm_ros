@@ -8,4 +8,4 @@ moveit_setup_assistant_config:
   CONFIG:
     author_name: Jason Peng
     author_email: jason@ufactory.cc
-    generated_timestamp: 1545822419
+    generated_timestamp: 1611183439

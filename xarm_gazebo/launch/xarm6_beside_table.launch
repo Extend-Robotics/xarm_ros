@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="run_demo" default="false" doc="If true, perform the demo after launch"/>
+  <arg name="run_demo" default="true" doc="If true, perform the demo after launch"/>
   <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
   <arg name="gui" default="true" doc="Starts gazebo gui" />
   <arg name="effort_control" default="false"/>

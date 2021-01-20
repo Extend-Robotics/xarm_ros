@@ -42,17 +42,17 @@
     args="gripper_trajectory_controller "/>
 
   <!-- convert joint states to TF transforms for rviz, etc -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+  <node name="robot_state_publisher_gazebo" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="false" output="screen">
     <remap from="/joint_states" to="/$(arg namespace)/joint_states" />
   </node>
 
   <!-- run_demo: start demo controller node, (pure position control) -->
-  <node if="$(arg run_demo_traj)" name="continuous_cmds"
+  <!-- <node if="$(arg run_demo_traj)" name="continuous_cmds"
     pkg="xarm_controller"
     type="sample_motion"
     respawn="false"
     output="screen"
-    ns="/$(arg namespace)"/>
+    ns="/$(arg namespace)"/> -->
 
 </launch>
