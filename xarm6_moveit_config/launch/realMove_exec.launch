@@ -53,6 +53,7 @@
   <!-- load the joint trajectory controller specified in yaml -->
   <rosparam file="$(find xarm_controller)/config/xarm6_traj_controller.yaml" command="load" ns="$(arg xarm_hw_ns)"/>
   <arg name="xarm_traj_controller" value="$(eval 'xarm6_traj_controller_velocity' if arg('velocity_control') else 'xarm6_traj_controller')" />
+  <param name="nsxx1" value="$(arg xarm_traj_controller)"/> 
   <node
     name="traj_controller_spawner"
     pkg="controller_manager"
