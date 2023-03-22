@@ -152,6 +152,8 @@ namespace xarm_control
 
 	bool XArmHW::init(ros::NodeHandle& root_nh, ros::NodeHandle& robot_hw_nh)
 	{
+		hw_nh_ = robot_hw_nh;
+		root_nh_ = root_nh;
 		bool velocity_control = false;
 		robot_hw_nh.getParam("velocity_control", velocity_control);
 		// ctrl_method_ = EFFORT; // INVALID
@@ -201,6 +203,25 @@ namespace xarm_control
 		// robot_hw_nh.param<std::string>("force_torque_sensor_name", force_torque_sensor_name_, "ft_sensor");
 		// force_torque_sensor_frame_id_ = "ft_sensor_data";
 
+		locked_ip_key_ = "/uf_robot/" + robot_ip;
+		std::string::size_type pos = 0;
+		while ((pos = locked_ip_key_.find(".")) != std::string::npos) {
+			locked_ip_key_.replace(pos, 1, "_");
+		}
+
+		bool ip_locked = false;
+
+		if (root_nh.hasParam(locked_ip_key_)) {
+			root_nh.getParam(locked_ip_key_, ip_locked);
+		}
+		if (ip_locked) {
+			ROS_ERROR("The same robotic arm can only be controlled by one controller, please check whether multiple controllers are started, the current controller has exited.");
+			return false;
+		}
+		else {
+			root_nh.setParam(locked_ip_key_, true);
+		}
+
 		xarm_driver_.init(robot_hw_nh, robot_ip);
 
 		dof_ = xarm_dof;
@@ -234,6 +255,7 @@ namespace xarm_control
 	XArmHW::~XArmHW()
 	{
 		xarm_driver_.arm->set_mode(XARM_MODE::POSE);
+		root_nh_.setParam(locked_ip_key_, false);
 		// xarm.setMode(XARM_MODE::POSE);
 	}
 
@@ -430,7 +452,9 @@ namespace xarm_control
 			{
 				for (int k = 0; k < dof_; k++) { cmds_float_[k] = (float)velocity_cmds_[k]; }
 				// cmd_ret = xarm.veloMoveJoint(cmds_float_, true, VELO_DURATION);
-				cmd_ret = xarm_driver_.arm->vc_set_joint_velocity(cmds_float_, true, VELO_DURATION);
+				float velo_duration = VELO_DURATION;
+				hw_nh_.param<float>("velo_duration", velo_duration, VELO_DURATION);
+				cmd_ret = xarm_driver_.arm->vc_set_joint_velocity(cmds_float_, true, velo_duration);
 			}
 			break;
 		case POSITION:

@@ -102,8 +102,12 @@ namespace xarm_control
 
 		ros::Duration read_duration_;
 		ros::Duration write_duration_;
+
+		ros::NodeHandle root_nh_;
+		ros::NodeHandle hw_nh_;
 		
 		bool enforce_limits_;
+		std::string locked_ip_key_;
 
 		// double force_[3];
 		// double torque_[3];

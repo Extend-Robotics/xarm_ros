@@ -1,11 +1,12 @@
 **UFACTORY Lite 6**用户, 确保您已经完成本篇说明中4.7节之前的部分，然后可以切换至[Lite6说明](./ReadMe_others.md).  
+**kinetic**版本的用户，请使用[kinetic分支](https://github.com/xArm-Developer/xarm_ros/tree/kinetic).
 
 ## 重要提示:
 &ensp;&ensp;使用xArm C++ SDK作为子模块后，**/xarm/set_tool_modbus**服务的使用有所修改，相比之前版本，回复中多余的0x09字节将**不再需要***！  
 &ensp;&ensp;由于机械臂通信格式修改, 建议在***2019年6月前发货***的xArm 早期用户尽早 ***升级*** 控制器固件程序，这样才能在以后的更新中正常驱动机械臂运动以及使用最新开发的各种功能。请联系我们获得升级的详细指示。 当前ROS库主要的分支已不支持旧版本，先前版本的ROS驱动包还保留在 ***'legacy'*** 分支中, 但不会再有更新。    
 &ensp;&ensp;在使用xarm_ros之前，请务必按照第3节**准备工作**的指示安装必要的第三方支持库，否则使用时会出现错误。  
 &ensp;&ensp;如果使用**Moveit**开发, 请尽量在PC和控制器之间使用**网线直连方式**, 不要使用交换机等中间设备, 否则引入的通信延迟可能会对Moveit轨迹执行造成不良影响。  
-&ensp;&ensp; 更新本仓库代码时, 请记得同时[检查submodule更新](#421-更新代码包)  
+&ensp;&ensp; 更新本仓库代码时, 请记得同时[检查submodule更新](#421-更新代码包)   
 
 # 目录:  
 * [1. 简介](#1-简介)
@@ -31,6 +32,7 @@
         * [5.7.8 真空吸头控制](#真空吸头控制)  
         * [5.7.9 末端工具Modbus通信](#末端工具modbus通信)
         * [5.7.10 'report_type'启动参数](#report_type-启动参数)
+    * [5.8 ***xarm_moveit_servo***](#58-xarm_moveit_servo)
 * [6. 模式切换(***更新***)](#6-模式切换)
     * [6.1 模式介绍](#61-模式介绍)
     * [6.2 切换模式的正确方法](#62-切换模式的正确方法)
@@ -76,6 +78,9 @@
    * (2022-09-07) 新增service(__set_tgpio_modbus_timeout__/__getset_tgpio_modbus_data__)，根据参数选择是否透传Modbus数据
    * (2022-09-07) 更新子模块xarm-sdk到1.11.0版本
    * (2022-11-16) 增加力矩相关services: /xarm/ft_sensor_enable, /xarm/ft_sensor_app_set, /xarm/ft_sensor_set_zero, /xarm/ft_sensor_cali_load, /xarm/get_ft_sensor_error
+   * (2023-02-10) 新增xarm_moveit_servo支持xbox手柄/SpaceMouse/键盘控制
+   * (2023-02-18) 给service(/xarm/ft_sensor_cali_load)增加保存操作, 增加力矩相关service(/xarm/ft_sensor_iden_load)
+   * (2023-02-27) 增加控制Lite6 Gripper的service(/ufactory/open_lite6_gripper, /ufactory/close_lite6_gripper, /ufactory/stop_lite6_gripper)(注： 一旦stop之后，close将无效，必须先open才能启用控制)
 
 # 3. 准备工作
 
@@ -550,12 +555,55 @@ respond_data: [1, 6, 0, 10, 0, 3]
 * 不同上报类型的更新频率:   
 
 |   type   |    port No.   | Frequency |  GPIO topic  | F/T sensor topic | 
-|:---------|:-------------:|:---------:|:------------:|-----------------:|
+|:--------:|:-------------:|:---------:|:------------:|:----------------:|
 |   normal |     30001     |    5Hz    |     不可用    |      不可用        |
 |   rich   |     30002     |    5Hz    |      可用     |       可用        | 
 |   dev    |     30003     |    100Hz  |     不可用    |        可用        |
 
 注: **GPIO topic** => `xarm/controller_gpio_states`. **F/T sensor topic** =>  `xarm/uf_ftsensor_ext_states` and `xarm/uf_ftsensor_raw_states`。
+
+## 5.8 xarm_moveit_servo:
+&ensp;&ensp;此模块用于通过特定外部输入设备来控制机械臂
+   - #### 5.8.1 通过 __XBOX360__ 手柄控制
+      - 左摇杆控制TCP的X和Y
+      - 右摇杆控制TCP的ROLL和PITCH
+      - [前面]左右两个触发器控制TCP的Z
+      - [前面]左右两个缓冲器控制TCP的YAW
+      - 十字键控制关节1和关节2的转动
+      - 按键X和按键B控制最后一个关节的转动
+      - 按键Y和按键A控制倒数第二个关节的转动
+
+      ```bash
+      # 控制真实xArm6机械臂
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.206 dof:=6 joystick_type:=1
+      # XBOX Wired -> joystick_type=1
+      # XBOX Wireless -> joystick_type=2
+
+      # 或者控制真实Lite6
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.52 dof:=6 joystick_type:=1 robot_type:=lite
+      ```
+
+   - #### 5.8.2 通过六维鼠标 __3Dconnexion SpaceMouse Wireless__ 来控制
+      - 六维鼠标的六个维度对应控制TCP的X/Y/Z/ROLL/PITCH/YAW
+      - 左边按键按下时单独控制TCP的XYZ
+      - 右边按键按下时单独控制TCP的ROLL/PITCH/YAW
+
+      ```bash
+      # 控制真实xArm6机械臂
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.206 dof:=6 joystick_type:=3
+
+      # 或者控制真实Lite6
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.52 dof:=6 joystick_type:=3 robot_type:=lite
+      ```
+
+   - #### 5.8.3 通过 __键盘输入__ 控制
+      ```bash
+      # 控制真实xArm6机械臂
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.206 dof:=6 joystick_type:=99
+
+      # 或者控制真实Lite6
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.52 dof:=6 joystick_type:=99 robot_type:=lite
+      ```
 
 
 # 6. 模式切换
@@ -639,6 +687,17 @@ $ catkin_make
 $ roslaunch d435i_xarm_setup d435i_xarm_auto_calib.launch robot_dof:=your_xArm_DOF robot_ip:=your_xArm_IP
 ```
 标定使用的aruco二维码可以在[这里下载](https://chev.me/arucogen/)，请记住自己下载的`marker ID`和`marker size`，并在以上launch文件中修改。参考[官方](https://github.com/IFL-CAMP/easy_handeye#calibration)或其他网络教程通过图形界面进行标定，标定完成并确认保存后，默认会在 `~/.ros/easy_handeye`目录下生成`.yaml`后缀的结果文档，供后续与手臂一起进行坐标变换使用。如果固定件用的是UFACTORY提供的[camera_stand](https://www.ufactory.cc/products/xarm-camera-module-2020)，在xarm_vision/d435i_xarm_setup/config/[xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml](./xarm_vision/d435i_xarm_setup/config/xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml)中保存了参考的标定结果。  
+
+### 7.2.1 关于 UFACTORY Lite6 手眼标定:
+请首先阅读和了解上面7.2章节关于xarm系列的标定示例，然后使用下面列出的替换文件应用于lite6的标定：  
+Ufactory Lite6标定启动文件:
+```bash
+$ roslaunch d435i_xarm_setup d435i_lite6_auto_calib.launch robot_ip:=your_xArm_IP
+```
+标定结果文档示例: [lite6_realsense_handeyecalibration_eye_on_hand_sample_result.yaml](./xarm_vision/d435i_xarm_setup/config/lite6_realsense_handeyecalibration_eye_on_hand_sample_result.yaml)
+
+标定结果发布启动文件示例:
+[publish_handeye_tf_lite6.launch](./xarm_vision/d435i_xarm_setup/launch/publish_handeye_tf_lite6.launch)
 
 ## 7.3 3D视觉抓取示例：
 本部分提供利用[***find_object_2d***](http://introlab.github.io/find-object/)进行简单的物体识别和抓取的示例程序。使用了RealSense D435i深度相机，UFACTORY camera_stand以及xArm官方机械爪。  

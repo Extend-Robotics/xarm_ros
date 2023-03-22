@@ -1,5 +1,6 @@
 For simplified Chinese version: [简体中文版](./ReadMe_cn.md)    
 For **UFACTORY Lite 6** users, make sure you have followed the instructions before chapter 4.7 on this page, then switch to [ReadMe for Lite6](./ReadMe_others.md).  
+For **kinetic** users, please use the [kinetic branch](https://github.com/xArm-Developer/xarm_ros/tree/kinetic).
 
 ## Important Notice:
 &ensp;&ensp;Topic "**xarm_cgpio_states**" has been renamed to "**controller_gpio_states**".  
@@ -37,6 +38,7 @@ For **UFACTORY Lite 6** users, make sure you have followed the instructions befo
         * [5.7.8 Vacuum Gripper Control](#vacuum-gripper-control)
         * [5.7.9 Tool Modbus communication](#tool-modbus-communication)
         * [5.7.10 'report_type' argument](#report_type-argument)
+    * [5.8 ***xarm_moveit_servo***](#58-xarm_moveit_servo)
 * [6. Mode Change(***Updated***)](#6-mode-change)
     * [6.1 Mode Explanation](#61-mode-explanation)
     * [6.2 Proper way to change modes](#62-proper-way-to-change-modes)
@@ -83,6 +85,9 @@ For **UFACTORY Lite 6** users, make sure you have followed the instructions befo
    * (2022-09-07) Add service(__set_tgpio_modbus_timeout__/__getset_tgpio_modbus_data__), choose whether to transparently transmit Modbus data according to different parameters
    * (2022-09-07) Update submodule xarm-sdk to version 1.11.0
    * (2022-11-16) Add torque related services: /xarm/ft_sensor_enable, /xarm/ft_sensor_app_set, /xarm/ft_sensor_set_zero, /xarm/ft_sensor_cali_load, /xarm/get_ft_sensor_error
+   * (2023-02-10) Added xarm_moveit_servo to support xbox controller/SpaceMouse/keyboard control
+   * (2022-02-18) Automatically saving in servie(/xarm/ft_sensor_cali_load) and add torque related service(/xarm/ft_sensor_iden_load)
+   * (2023-02-27) Added service to control Lite6 Gripper(/ufactory/open_lite6_gripper, /ufactory/close_lite6_gripper, /ufactory/stop_lite6_gripper)(Note: Once stop, close will be invalid, you must open first to enable control)
 
 # 3. Preparations before using this package
 
@@ -565,12 +570,55 @@ When launching real xArm ROS applications, the argument "report_type" can be spe
 * The report rate of the three types: 
 
 |   type   |    port No.   | Frequency |  GPIO topic   | F/T sensor topic | 
-|:---------|:-------------:|:---------:|:-------------:|-----------------:|
+|:--------:|:-------------:|:---------:|:-------------:|:----------------:|
 |   normal |     30001     |    5Hz    | Not Available |   Not Available  |
 |   rich   |     30002     |    5Hz    |   Available   |     Available    | 
 |   dev    |     30003     |    100Hz  | Not Available |     Available    |
 
 Note: **GPIO topic** => `xarm/controller_gpio_states`. **F/T sensor topic** =>  `xarm/uf_ftsensor_ext_states` and `xarm/uf_ftsensor_raw_states`.
+
+## 5.8 xarm_moveit_servo:
+&ensp;&ensp;This package serves as a demo for jogging xArm with devices such as joystick.
+   - #### 5.8.1 Controlling with XBOX360 joystick
+      - left stick for X and Y direction.  
+      - right stick for ROLL and PITCH adjustment.  
+      - left and right trigger (LT/RT) for Z direction.  
+      - left and right bumper (LB/RB) for YAW adjustment.  
+      - D-PAD for controlling joint1 and joint2.  
+      - buttons X and B for controlling last joint.  
+      - buttons Y and A for controlling second last joint. 
+
+      ```bash
+      # For controlling real xArm: (use xArm 6 as example)
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.206 dof:=6 joystick_type:=1
+      # XBOX Wired -> joystick_type=1
+      # XBOX Wireless -> joystick_type=2
+
+      # Or controlling real Lite6
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.52 dof:=6 joystick_type:=1 robot_type:=lite
+      ```
+
+   - #### 5.8.2 Controlling with 3Dconnexion SpaceMouse Wireless
+      - 6 DOFs of the mouse are mapped for controlling X/Y/Z/ROLL/PITCH/YAW
+      - Left button clicked for just X/Y/Z adjustment
+      - Right button clicked for just ROLL/PITCH/YAW adjustment
+
+      ```bash
+      # For controlling real xArm: (use xArm 6 as example)
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.206 dof:=6 joystick_type:=3
+
+      # Or controlling real Lite6
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.52 dof:=6 joystick_type:=3 robot_type:=lite
+      ```
+
+   - #### 5.8.3 Controlling with PC keyboard
+      ```bash
+      # For controlling real xArm: (use xArm 6 as example)
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.206 dof:=6 joystick_type:=99
+
+      # Or controlling real Lite6
+      $ roslaunch xarm_moveit_servo xarm_moveit_servo_realmove.launch robot_ip:=192.168.1.52 dof:=6 joystick_type:=99 robot_type:=lite
+      ```
 
 # 6. Mode Change
 &ensp;&ensp;xArm may operate under different modes depending on different controling methods. Current mode can be checked in the message of topic "xarm/xarm_states". And there are circumstances that demand user to switch between operation modes. 
@@ -655,6 +703,20 @@ $ roslaunch d435i_xarm_setup d435i_xarm_auto_calib.launch robot_dof:=your_xArm_D
 The `aruco Marker` used inside can be downloaded [here](https://chev.me/arucogen/), please remember the `marker ID` and `marker size` and modify them in the launch file accordingly. Refer to [official](https://github.com/IFL-CAMP/easy_handeye#calibration)or other usage instructions online and finish the calibration with the GUI.   
 
 If calculation result is confirmed and saved，it will appear by default under `~/.ros/easy_handeye` directory and can be used for transferring object coordinates to base frame. If the [camera_stand](https://www.ufactory.cc/products/xarm-camera-module-2020) provided by UFACTORY is used for fixing camera, a sample calibration result is stored at xarm_vision/d435i_xarm_setup/config/[xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml](./xarm_vision/d435i_xarm_setup/config/xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml) for this case.  
+
+
+### 7.2.1 Hand-eye Calibration Demo for UFACTORY Lite6:
+Please first read through the above instruction for xarm series, and use the files listed here for Lite6 calibration.  
+
+Sample calibration launch:  
+```bash
+$ roslaunch d435i_xarm_setup d435i_lite6_auto_calib.launch robot_ip:=your_xArm_IP
+```
+Sample Calibration result file: [lite6_realsense_handeyecalibration_eye_on_hand_sample_result.yaml](./xarm_vision/d435i_xarm_setup/config/lite6_realsense_handeyecalibration_eye_on_hand_sample_result.yaml)
+
+Sample calibration result TF publication:
+[publish_handeye_tf_lite6.launch](./xarm_vision/d435i_xarm_setup/launch/publish_handeye_tf_lite6.launch)
+
 
 ## 7.3 Vision Guided Grasping Demo:
 [***find_object_2d***](http://introlab.github.io/find-object/) is used for this demo for simple object detection and grasping. Hardware used in this part: RealSense D435i depth camera, UFACTORY camera stand and the xArm Gripper.  
