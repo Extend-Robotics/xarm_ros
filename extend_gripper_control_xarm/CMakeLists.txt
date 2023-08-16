@@ -213,4 +213,6 @@ install(DIRECTORY scripts DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(PROGRAMS scripts/gripper_control_digital.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(PROGRAMS scripts/gripper_control_robotiq.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
