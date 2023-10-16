@@ -211,6 +211,6 @@ include_directories(
 
 install(DIRECTORY scripts DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(PROGRAMS scripts/gripper_control_digital.py scripts/gripper_control_robotiq.py
+install(PROGRAMS scripts/gripper_control_digital.py scripts/gripper_control_robotiq.py scripts/gripper_control_vacuum.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
