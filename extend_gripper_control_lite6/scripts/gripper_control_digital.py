@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import rosnode
 import rospy
 import sys
@@ -30,3 +29,4 @@ if __name__ == '__main__':
     #gripper_speed_value = gripper_speed_service(5000)
     rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback)
     rospy.spin()
+
