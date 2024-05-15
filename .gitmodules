@@ -1,3 +1,6 @@
 [submodule "xarm_sdk/cxx"]
 	path = xarm_sdk/cxx
 	url = https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
+[submodule "moveit_visual_tools"]
+	path = moveit_visual_tools
+	url = https://github.com/moveit/moveit_visual_tools.git
