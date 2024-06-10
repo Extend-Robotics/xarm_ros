@@ -64,6 +64,7 @@ def split_decimal(decimal):
 
 if __name__ == '__main__': 
     #Configure the Baudrate for the tool modbus
+    print("Starting the script to control Inspire Hand")
     gripper_baudrate_service = rospy.ServiceProxy("/xarm/config_tool_modbus", xarm_msgs.srv.ConfigToolModbus)
     gripper_baudrate_config = ConfigToolModbusRequest()
     gripper_baudrate_config.baud_rate = 115200  #Baudrate for the Robotiq grippers

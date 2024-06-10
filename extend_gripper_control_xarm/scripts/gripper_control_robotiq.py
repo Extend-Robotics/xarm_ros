@@ -31,6 +31,7 @@ def dataCallback(msg):
     gripper_modbus_service(gripper_modbus_data)
 
 if __name__ == '__main__': 
+    print("Starting the script to control Robotiq Gripper")
     #Configure the Baudrate for the tool modbus
     gripper_baudrate_service = rospy.ServiceProxy("/xarm/config_tool_modbus", xarm_msgs.srv.ConfigToolModbus)
     gripper_baudrate_config = ConfigToolModbusRequest()
