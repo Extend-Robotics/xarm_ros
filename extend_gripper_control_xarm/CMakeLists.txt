@@ -209,8 +209,7 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-install(DIRECTORY scripts DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(PROGRAMS scripts/gripper_control_digital.py scripts/gripper_control_inspire.py scripts/gripper_control_robotiq.py scripts/gripper_control_vacuum.py
+install(PROGRAMS scripts/compiled_programs/gripper_control_digital.pyc scripts/compiled_programs/gripper_control_inspire.pyc scripts/compiled_programs/gripper_control_robotiq.pyc scripts/compiled_programs/gripper_control_vacuum.pyc
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
