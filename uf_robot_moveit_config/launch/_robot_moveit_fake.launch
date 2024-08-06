@@ -4,6 +4,7 @@
   <arg name="robot_sn" default="" />
   <arg name="model1300" default="false" />
   <arg name="limited" default="true" />
+  <arg name="kinematics_suffix" default="" />
   
   <arg name="attach_to" default="world" />
   <arg name="attach_xyz" default="'0 0 0'" />
@@ -32,20 +33,24 @@
   <!-- only use in xarm_planner -->
   <arg name="no_gui_plan" default="false" />
 
-  <remap from="$(arg ext_ns)/source_list" to="/source_list" />
+  <arg name="pipeline" default="ompl" />
+  <arg name="show_rviz" default="true" />
+
+  <remap from="source_list" to="/source_list" />
   <include file="$(find uf_robot_moveit_config)/launch/__moveit_rviz_common.launch">
-    <arg name="jnt_stat_source" value="[$(arg ext_ns)/move_group/fake_controller_joint_states]" />
+    <arg name="jnt_stat_source" value="[move_group/fake_controller_joint_states]" />
     <!-- option to launch move_group node or not -->
     <arg name="load_move_group" value="true" />
     <!-- whether to use fake_execution controller to drive the motion -->
     <arg name="fake_execution" value="true" />
-    <arg name="NO_GUI_CTRL" value="$(arg no_gui_plan)"/>
+    <arg name="no_gui_plan" value="$(arg no_gui_plan)"/>
     
     <arg name="dof" value="$(arg dof)" />
     <arg name="robot_type" value="$(arg robot_type)" />
     <arg name="robot_sn" value="$(arg robot_sn)"/>
     <arg name="model1300" value="$(arg model1300)"/>
     <arg name="limited" value="$(arg limited)"/>
+    <arg name="kinematics_suffix_1" value="$(arg kinematics_suffix)"/>
     
     <arg name="attach_to" value="$(arg attach_to)"/>
     <arg name="attach_xyz" value="$(arg attach_xyz)"/>
@@ -70,6 +75,8 @@
 
     <arg name="sensors_3d" value="$(arg sensors_3d)" />
     <arg name="jnt_stat_pub_rate" value="$(arg jnt_stat_pub_rate)"/>
+    <arg name="pipeline" value="$(arg pipeline)"/>
+    <arg name="show_rviz" value="$(arg show_rviz)"/>
     
   </include>
 

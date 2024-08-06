@@ -6,6 +6,7 @@
   <arg name="limited" default="true" />
   <arg name="hw_ns" default="xarm"/>
   <arg name="velocity_control" default="false"/>
+  <arg name="kinematics_suffix" default=""/>
 
   <arg name="attach_to" default="world" />
   <arg name="attach_xyz" default="'0 0 0'" />
@@ -14,6 +15,7 @@
   <arg name="add_realsense_d435i" default="false" />
   <arg name="add_d435i_links" default="false" />
   <arg name="add_gripper" default="false" />
+  <arg name="gripper_action" default="false" />
   <arg name="add_vacuum_gripper" default="false" />
   <arg name="add_other_geometry" default="false"/>
   <arg name="geometry_type" default="box"/>
@@ -33,11 +35,12 @@
 
   <!-- Remap the name space so it can send command to gazebo loaded controller -->
   <!-- this remap must appear BEFORE move_group launch -->
-  <arg if="$(eval arg('robot_type') == 'uf850')" name="robot_traj_controller" value="$(eval arg('robot_type') + ('_traj_controller_velocity' if arg('velocity_control') else '_traj_controller'))" />
-  <arg unless="$(eval arg('robot_type') == 'uf850')" name="robot_traj_controller" value="$(eval str(arg('robot_type')) + str(arg('dof')) + ('_traj_controller_velocity' if arg('velocity_control') else '_traj_controller'))" />
-  <remap from="/follow_joint_trajectory" to="/$(arg hw_ns)/$(arg robot_traj_controller)/follow_joint_trajectory"/>
-  <arg name="gripper_traj_controller" value="$(eval 'gripper_trajectory_controller_velocity' if arg('velocity_control') else 'gripper_trajectory_controller')" />
-  <remap if="$(arg add_gripper)" from="gripper_controller/follow_joint_trajectory" to="/$(arg hw_ns)/$(arg gripper_traj_controller)/follow_joint_trajectory"/>
+  <arg if="$(eval arg('robot_type') == 'uf850')" name="robot_controller_name" value="$(eval arg('robot_type') + ('_velo_traj_controller' if arg('velocity_control') else '_traj_controller'))" />
+  <arg unless="$(eval arg('robot_type') == 'uf850')" name="robot_controller_name" value="$(eval str(arg('robot_type')) + str(arg('dof')) + ('_velo_traj_controller' if arg('velocity_control') else '_traj_controller'))" />
+  <remap from="/follow_joint_trajectory" to="/$(arg hw_ns)/$(arg robot_controller_name)/follow_joint_trajectory"/>
+  <arg name="gripper_controller_name" value="$(eval 'gripper_action_controller' if arg('gripper_action') else 'gripper_velo_traj_controller' if arg('velocity_control') else 'gripper_traj_controller')" />
+  <remap if="$(eval arg('add_gripper') and not arg('gripper_action'))" from="gripper_controller/follow_joint_trajectory" to="/$(arg hw_ns)/$(arg gripper_controller_name)/follow_joint_trajectory"/>
+  <remap if="$(eval arg('add_gripper') and arg('gripper_action'))" from="gripper_controller/gripper_action" to="/$(arg hw_ns)/$(arg gripper_controller_name)/gripper_cmd"/>
 
   <include file="$(find uf_robot_moveit_config)/launch/__moveit_rviz_common.launch">
     <arg name="jnt_stat_source" value="[/$(arg hw_ns)/joint_states]" />
@@ -51,6 +54,7 @@
     <arg name="model1300" value="$(arg model1300)"/>
     <arg name="limited" value="$(arg limited)"/>
     <arg name="velocity_control" value="$(arg velocity_control)" />
+    <arg name="kinematics_suffix_1" value="$(arg kinematics_suffix)" />
 
     <arg name="attach_to" value="$(arg attach_to)"/>
     <arg name="attach_xyz" value="$(arg attach_xyz)"/>
@@ -59,6 +63,7 @@
     <arg name="add_realsense_d435i" value="$(arg add_realsense_d435i)"/>
     <arg name="add_d435i_links" value="$(arg add_d435i_links)"/>
     <arg name="add_gripper" value="$(arg add_gripper)"/>
+    <arg name="gripper_action" value="$(arg gripper_action)" />
     <arg name="add_vacuum_gripper" value="$(arg add_vacuum_gripper)"/>
     <arg name="add_other_geometry" value="$(arg add_other_geometry)"/>
     <arg name="geometry_type" value="$(arg geometry_type)"/>
@@ -86,6 +91,7 @@
     <arg name="limited" value="$(arg limited)"/>
     <arg name="hw_ns" value="$(arg hw_ns)"/>
     <arg name="velocity_control" value="$(arg velocity_control)" />
+    <arg name="kinematics_suffix" value="$(arg kinematics_suffix)" />
 
     <arg name="attach_to" value="$(arg attach_to)"/>
     <arg name="attach_xyz" value="$(arg attach_xyz)"/>
@@ -94,6 +100,7 @@
     <arg name="add_realsense_d435i" value="$(arg add_realsense_d435i)"/>
     <arg name="add_d435i_links" value="$(arg add_d435i_links)"/>
     <arg name="add_gripper" value="$(arg add_gripper)"/>
+    <arg name="gripper_action" value="$(arg gripper_action)"/>
     <arg name="add_vacuum_gripper" value="$(arg add_vacuum_gripper)"/>
     <arg name="add_other_geometry" value="$(arg add_other_geometry)"/>
     <arg name="geometry_type" value="$(arg geometry_type)"/>

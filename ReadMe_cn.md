@@ -1,4 +1,4 @@
-**UFACTORY Lite 6**用户, 确保您已经完成本篇说明中4.7节之前的部分，然后可以切换至[Lite6说明](./ReadMe_others.md).  
+**UFACTORY Lite 6/850**用户, 确保您已经完成本篇说明中4.7节之前的部分，然后可以切换至[Lite6/UF850说明](./ReadMe_others.md).  
 **kinetic**版本的用户，请使用[kinetic分支](https://github.com/xArm-Developer/xarm_ros/tree/kinetic).
 
 ## 重要提示:
@@ -100,6 +100,7 @@
       - xarm7_gripper_moveit_config
       - xarm7_vacuum_moveit_config
       - lite6_moveit_config
+   * (2023-10-12) 新增关节kinematics参数文件的生成与使用 (仅支持 __uf_robot_moveit_config__，参见[uf_robot_moveit_config](uf_robot_moveit_config/Readme_cn.md)里的通用参数`kinematics_suffix`的说明)
 
 # 3. 准备工作
 
@@ -195,6 +196,8 @@ $ roslaunch xarm_description xarm7_rviz_display.launch
 
 ## 5.5 xarm7_moveit_config
 请注意: xarm_moveit_config相关package会将所有关节限制在`[-pi, pi]`范围内, 因为如果不加限制，moveit可能会解出关节运动范围很大的轨迹。这个关节范围限制可以通过设置`...moveit_config/launch/planning_context.launch`文件中的"limited:=false"来取消。  
+
+对于任何需要将**运动学校准**参数加入URDF模型的型号, 请使用[uf_robot_moveit_config](uf_robot_moveit_config/Readme_cn.md), 这是一个**统一的**集合了全部UFACTORY机械臂型号的`moveit_config`包，并且支持一些新特性。   
 
 &ensp;&ensp;
    部分文档由moveit_setup_assistant自动生成, 用于Moveit Planner和Rviz可视化仿真。如果已安装MoveIt!,可以尝试跑demo： 
@@ -679,23 +682,18 @@ $ git clone -b kinetic-devel https://github.com/pal-robotics/aruco_ros.git
 ```bash
 $ git clone https://github.com/IFL-CAMP/easy_handeye
 ``` 
-### 7.1.4 安装vision_visp 支持包：
-参考[官方Github](https://github.com/lagadic/vision_visp):
-```bash
-$ git clone -b kinetic-devel https://github.com/lagadic/vision_visp.git
-```
-### 7.1.5 安装find_object_2d包，用于物体识别：
+### 7.1.4 安装find_object_2d包，用于物体识别：
 参考[官方Github](https://github.com/introlab/find-object/tree/kinetic-devel):
 ```bash
 $ sudo apt-get install ros-kinetic-find-object-2d
 ```
-### 7.1.6 安装其他依赖包：
+### 7.1.5 安装其他依赖包：
 ```bash
 $ cd ~/catkin_ws
 ```
 然后请参考[4.3节内容](#43-安装其他依赖包).
 
-### 7.1.7 编译整个工作区：
+### 7.1.6 编译整个工作区：
 ```bash
 $ catkin_make
 ```
@@ -705,7 +703,9 @@ $ catkin_make
 ```bash
 $ roslaunch d435i_xarm_setup d435i_xarm_auto_calib.launch robot_dof:=your_xArm_DOF robot_ip:=your_xArm_IP
 ```
-标定使用的aruco二维码可以在[这里下载](https://chev.me/arucogen/)，请记住自己下载的`marker ID`和`marker size`，并在以上launch文件中修改。参考[官方](https://github.com/IFL-CAMP/easy_handeye#calibration)或其他网络教程通过图形界面进行标定，标定完成并确认保存后，默认会在 `~/.ros/easy_handeye`目录下生成`.yaml`后缀的结果文档，供后续与手臂一起进行坐标变换使用。如果固定件用的是UFACTORY提供的[camera_stand](https://www.ufactory.cc/products/xarm-camera-module-2020)，在xarm_vision/d435i_xarm_setup/config/[xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml](./xarm_vision/d435i_xarm_setup/config/xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml)中保存了参考的标定结果。  
+注意: 对于**2023年8月之后**生产的xArm/UF850系列型号, 可以选择将运动学校准参数加入到URDF模型中, 在以上的launch命令中使用`kinematics_suffix`参数来提高标定的准确度, 详情参考[这里](https://github.com/xArm-Developer/xarm_ros/blob/master/uf_robot_moveit_config/Readme_cn.md#optional-parameters)。   
+
+标定使用的aruco二维码可以在[这里下载](https://chev.me/arucogen/)，请记住自己下载的`marker ID`和`marker size`，并在以上launch文件中修改。参考[官方](https://github.com/IFL-CAMP/easy_handeye#calibration)或其他网络教程通过图形界面进行标定，标定完成并确认保存后，默认会在 `~/.ros/easy_handeye`目录下生成`.yaml`后缀的结果文档，供后续与手臂一起进行坐标变换使用。如果固定件用的是UFACTORY提供的[camera_stand](https://www.ufactory.cc/products/xarm-camera-module-2020)，在xarm_vision/d435i_xarm_setup/config/[xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml](./xarm_vision/d435i_xarm_setup/config/xarm_realsense_handeyecalibration_eye_on_hand_sample_result.yaml)中保存了参考的标定结果。 
 
 ### 7.2.1 关于 UFACTORY Lite6 手眼标定:
 请首先阅读和了解上面7.2章节关于xarm系列的标定示例，然后使用下面列出的替换文件应用于lite6的标定：  
@@ -717,6 +717,14 @@ $ roslaunch d435i_xarm_setup d435i_lite6_auto_calib.launch robot_ip:=your_xArm_I
 
 标定结果发布启动文件示例:
 [publish_handeye_tf_lite6.launch](./xarm_vision/d435i_xarm_setup/launch/publish_handeye_tf_lite6.launch)
+
+### 7.2.2 手眼标定注意事项:
+由于`easy_handeye`默认生成的机械臂位置的位姿变化不大，导致最终的标定结果可能不是太准确也不那么稳定。
+在实际标定过程中我们可以不使用`easy_handeye`生成的位置，可以在上述命令指定启动参数`freehand_robot_movement:=true`启动，通过xarm studio控制界面或者开启拖动示教认为控制机械臂到不同位置，然后通过启动的手眼标定窗口的"__Take Sample__"采集数据，采集到大概17个数据后通过"__Compute__"计算，每次采集时机械臂的位置建议在保证标定板在视野范围内尽量多旋转rpy
+- 两次运动的旋转轴的夹角越大越好
+- 每次运动的旋转矩阵对应的旋转角度越大越好
+- 相机中心到标定板的距离越小越好
+- 每次运动机械臂末端运动的距离越小越好
 
 ## 7.3 3D视觉抓取示例：
 本部分提供利用[***find_object_2d***](http://introlab.github.io/find-object/)进行简单的物体识别和抓取的示例程序。使用了RealSense D435i深度相机，UFACTORY camera_stand以及xArm官方机械爪。  

@@ -47,8 +47,8 @@
   </include>
 
   <!-- load the joint trajectory controller specified in yaml -->
-  <rosparam file="$(find xarm_controller)/config/lite6_traj_controller.yaml" command="load" ns="$(arg uf_hw_ns)"/>
-  <arg name="uf_traj_controller" value="$(eval 'lite6_traj_controller_velocity' if arg('velocity_control') else 'lite6_traj_controller')" />
+  <rosparam file="$(find xarm_controller)/config/lite6/lite6_controllers.yaml" command="load" ns="$(arg uf_hw_ns)"/>
+  <arg name="robot_controller_name" value="$(eval 'lite6_velo_traj_controller' if arg('velocity_control') else 'lite6_traj_controller')" />
   <node
     name="traj_controller_spawner"
     pkg="controller_manager"
@@ -56,16 +56,15 @@
     respawn="false"
     output="screen"
     ns="$(arg uf_hw_ns)"
-    args="$(arg uf_traj_controller) joint_state_controller"/>
+    args="$(arg robot_controller_name) joint_state_controller"/>
 
-  <!-- <remap from="/follow_joint_trajectory" to="xarm/lite6_traj_controller/follow_joint_trajectory"/> -->
-  <remap from="/follow_joint_trajectory" to="$(arg uf_hw_ns)/$(arg uf_traj_controller)/follow_joint_trajectory"/>
+  <remap from="/follow_joint_trajectory" to="$(arg uf_hw_ns)/$(arg robot_controller_name)/follow_joint_trajectory"/>
 
   <!-- common part -->
   <remap from="/tf" to="$(arg ext_ns)/tf" />
   <remap from="/tf_static" to="$(arg ext_ns)/tf_static" />
   <remap from="/move_group/monitored_planning_scene" to="$(arg ext_ns)/move_group/monitored_planning_scene" />
-  <remap from="$(arg ext_ns)/source_list" to="/source_list" />
+  <remap from="source_list" to="/source_list" />
   <include file="$(find lite6_moveit_config)/launch/moveit_rviz_common.launch">
     <arg name="jnt_stat_source" value="[$(arg uf_hw_ns)/joint_states]" />
     <arg name="jnt_stat_pub_rate" value="$(arg jnt_stat_pub_rate)"/>
