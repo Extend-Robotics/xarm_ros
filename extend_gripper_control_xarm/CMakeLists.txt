@@ -210,6 +210,6 @@ include_directories(
 # catkin_add_nosetests(test)
 
 
-install(PROGRAMS scripts/compiled_programs/gripper_control_digital.pyc scripts/compiled_programs/gripper_control_inspire.pyc scripts/compiled_programs/gripper_control_robotiq.pyc scripts/compiled_programs/gripper_control_vacuum.pyc
+install(PROGRAMS scripts/compiled_programs/gripper_control_digital.pyc scripts/compiled_programs/gripper_control_inspire.pyc scripts/compiled_programs/gripper_control_robotiq.pyc scripts/compiled_programs/gripper_control_vacuum.pyc scripts/compiled_programs/gripper_response_inspire.pyc
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
