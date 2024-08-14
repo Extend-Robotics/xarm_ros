@@ -11,16 +11,16 @@ import xarm_msgs.srv
 
 #Creating the ros node and service client
 rospy.init_node("lite6_gripper")
-rospy.wait_for_service("/ufactory/close_lite6_gripper")
-rospy.wait_for_service("/ufactory/open_lite6_gripper")
+rospy.wait_for_service("ufactory/close_lite6_gripper")
+rospy.wait_for_service("ufactory/open_lite6_gripper")
 
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,850]
     if msg.gripperDigital.data:
-        gripperControl = rospy.ServiceProxy("/ufactory/close_lite6_gripper", xarm_msgs.srv.Call)
+        gripperControl = rospy.ServiceProxy("ufactory/close_lite6_gripper", xarm_msgs.srv.Call)
         gripperAction = gripperControl()
     else:
-        gripperControl = rospy.ServiceProxy("/ufactory/open_lite6_gripper", xarm_msgs.srv.Call)
+        gripperControl = rospy.ServiceProxy("ufactory/open_lite6_gripper", xarm_msgs.srv.Call)
         gripperAction = gripperControl()
 
 if __name__ == '__main__':
