@@ -11,6 +11,7 @@ from std_msgs.msg import String
 import xarm_msgs.srv 
 
 from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
+from std_msgs.msg import Float64, Float64MultiArray, Header
 
 def GetForceValue(gripperModbusService):
     fingerForceValue = [0] * 6

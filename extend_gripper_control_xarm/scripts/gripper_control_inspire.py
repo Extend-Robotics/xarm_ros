@@ -12,6 +12,7 @@ import xarm_msgs.srv
 from gripper_response_inspire import GetForceValue,GetJointValues
 
 from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
+from std_msgs.msg import Float64, Float64MultiArray, Header
 
 #Creating the ros node and service client
 rospy.init_node("robotiq_gripper")
@@ -65,7 +66,7 @@ def dataCallback(msg):
         msg.header = header
         msg.gripperJointValues = GetJointValues(gripperModbusService)
         msg.gripperForceValues = GetForceValue(gripperModbusService)
-        pubGripperResponse(msg)
+        pubGripperResponse.publish(msg)
 
         
 
@@ -91,7 +92,7 @@ if __name__ == '__main__':
 
     #Reset the Gripper
     gripperModbusData = GetSetModbusDataRequest()
-    gripperModbusData.send_data = [0x01, 0x06, 0x05, 0xC2,0x03,0xE8,0x03,0xE8,0x03,0xE8,0x00,0x00,0x00,0x00,0x00,0x00]
+    gripperModbusData.send_data = [0x01, 0x06, 0x05, 0xC2,0x00,0x00,0x03,0xE8,0x03,0xE8,0x00,0x00,0x00,0x00,0x00,0x00]
     gripperModbusData.respond_len = 6
     gripperModbusData.host_id = 9
     gripperModbusData.is_transparent_transmission = False
