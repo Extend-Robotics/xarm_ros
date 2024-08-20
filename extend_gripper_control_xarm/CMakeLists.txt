@@ -209,17 +209,29 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
+#########################
+## Compile and Install ##
+#########################
+
+
+set(PYTHON_COMPILE_ALL "python3" "-m" "compileall" "-b")
+
+if( $ENV{ROS_PYTHON_VERSION} STREQUAL "2")
+  set(PYTHON_COMPILE_ALL "python" "-m" "compileall")
+endif()
+
+
 
 add_custom_command(
-  OUTPUT "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.py" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc"
+  OUTPUT "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc"
   DEPENDS "scripts/gripper_control_digital.py" "scripts/gripper_control_inspire.py" "scripts/gripper_control_robotiq.py" "scripts/gripper_control_vacuum.py" "scripts/gripper_response_inspire.py"
   COMMAND ${PYTHON_COMPILE_ALL} scripts
-  COMMAND chmod +x "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.py" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc"
+  COMMAND chmod +x "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc"
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   COMMENT "Compiling python scripts"
 )
 
-add_custom_target(${PROJECT_NAME}_compiled_python ALL DEPENDS "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.py" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc")
+add_custom_target(${PROJECT_NAME}_compiled_python ALL DEPENDS "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc")
 
 
 
