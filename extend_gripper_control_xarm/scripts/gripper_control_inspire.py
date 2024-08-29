@@ -22,9 +22,10 @@ rospy.wait_for_service("xarm/getset_tgpio_modbus_data")
 def initialize():
     #Initialize the Modbus service and the response publisher
     pubGripperResponse = rospy.Publisher('extend_gripper_response',GripperResponse,queue_size=0)
+    pubGripperCommandRepublisher = rospy.Publisher('extend_gripper_republished_command',GripperControl,queue_size=0)
     gripperModbusService = rospy.ServiceProxy("xarm/getset_tgpio_modbus_data", xarm_msgs.srv.GetSetModbusData)
 
-    return pubGripperResponse,gripperModbusService
+    return pubGripperResponse,pubGripperCommandRepublisher,gripperModbusService
 
 
 
@@ -55,18 +56,22 @@ def dataCallback(msg):
         gripperModbusData.use_503_port = False
         gripperModbusService(gripperModbusData) 
 
-
-        #Fetching the Gripper Response Joint States and Force
-        msg = GripperResponse()
         header = Header()
         header.seq = 0
         header.frame_id = ""
         header.stamp = rospy.Time.now()
-        
-        msg.header = header
-        msg.gripperJointValues = GetJointValues(gripperModbusService)
-        msg.gripperForceValues = GetForceValue(gripperModbusService)
-        pubGripperResponse.publish(msg)
+
+        pubGripperCommandRepublisherData = GripperControl()
+        pubGripperCommandRepublisherData = msg
+        pubGripperCommandRepublisherData.header = header
+        pubGripperCommandRepublisher.publish(pubGripperCommandRepublisherData)
+
+        #Fetching the Gripper Response Joint States and Force
+        pubGripperResponseData = GripperResponse()
+        pubGripperResponseData.header = header
+        pubGripperResponseData.gripperJointValues = GetJointValues(gripperModbusService)
+        pubGripperResponseData.gripperForceValues = GetForceValue(gripperModbusService)
+        pubGripperResponse.publish(pubGripperResponseData)
 
         
 
@@ -88,7 +93,7 @@ def SplitDecimal(decimal):
 
 if __name__ == '__main__': 
     
-    (pubGripperResponse,gripperModbusService) = initialize()  
+    (pubGripperResponse,pubGripperCommandRepublisher,gripperModbusService) = initialize()  
 
     #Reset the Gripper
     gripperModbusData = GetSetModbusDataRequest()
