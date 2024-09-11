@@ -44,12 +44,12 @@ def GetJointValues(gripperModbusService):
 
     ##Coverting 0-2000 to joint values for each finger 
 
-    handJointValue[0] = handJointValue[0] / 20.62
-    handJointValue[1] = handJointValue[1] / 20.62
-    handJointValue[2] = handJointValue[2] / 20.62
-    handJointValue[3] = handJointValue[3] / 20.62
-    handJointValue[4] = (handJointValue[4] / 51.282) - 6
-    handJointValue[5]= (handJointValue[5] / 25) -6
+    handJointValue[0] = handJointValue[0] / 20.22
+    handJointValue[1] = handJointValue[1] / 20.22
+    handJointValue[2] = handJointValue[2] / 20.22
+    handJointValue[3] = handJointValue[3] / 20.22
+    handJointValue[4] = handJointValue[4] / 90.909
+    handJointValue[5] = handJointValue[5] / 31.746
     return handJointValue
 
     

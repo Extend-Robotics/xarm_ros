@@ -15,7 +15,7 @@ from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
 from std_msgs.msg import Float64, Float64MultiArray, Header
 
 #Creating the ros node and service client
-rospy.init_node("robotiq_gripper")
+rospy.init_node("inspire_gripper")
 rospy.wait_for_service("xarm/config_tool_modbus")
 rospy.wait_for_service("xarm/getset_tgpio_modbus_data")
 
@@ -33,12 +33,12 @@ def initialize():
 def dataCallback(msg):
     if len(msg.handJointValues) > 0:
         # Remaping Range [0,1] to [0,2000] and converting to high and low order bytes
-        lowOrderLittleFinger,highOrderLittleFinger = SplitDecimal(int(round(20.62*msg.handJointValues[0])))
-        lowOrderRingFinger,highOrderRingFinger = SplitDecimal(int(round(20.62*msg.handJointValues[1])))
-        lowOrderMiddleFinger,highOrderMiddleFinger = SplitDecimal(int(round(20.62*msg.handJointValues[2])))
-        lowOrderIndexFinger,highOrderIndexFinger = SplitDecimal(int(round(20.62*msg.handJointValues[3])))
-        lowOrderThumbFinger,highOrderThumbFinger = SplitDecimal(int(round(51.282*(msg.handJointValues[4]+6))))
-        lowOrderThumbBaseFinger,highOrderThumbBaseFinger = SplitDecimal(int(round(25*(msg.handJointValues[5]+6))))
+        lowOrderLittleFinger,highOrderLittleFinger = SplitDecimal(int(round(20.22*msg.handJointValues[0])))
+        lowOrderRingFinger,highOrderRingFinger = SplitDecimal(int(round(20.22*msg.handJointValues[1])))
+        lowOrderMiddleFinger,highOrderMiddleFinger = SplitDecimal(int(round(20.22*msg.handJointValues[2])))
+        lowOrderIndexFinger,highOrderIndexFinger = SplitDecimal(int(round(20.22*msg.handJointValues[3])))
+        lowOrderThumbFinger,highOrderThumbFinger = SplitDecimal(int(round(90.909*msg.handJointValues[4])))
+        lowOrderThumbBaseFinger,highOrderThumbBaseFinger = SplitDecimal(int(round(31.746*msg.handJointValues[5])))
 
         #gripper_modbus_service = rospy.ServiceProxy("xarm/getset_tgpio_modbus_data", xarm_msgs.srv.GetSetModbusData)
         #Commanding the Hand movement
