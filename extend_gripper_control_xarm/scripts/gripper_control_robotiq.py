@@ -60,5 +60,5 @@ if __name__ == '__main__':
     gripper_modbus_service(gripper_modbus_data)      
 
     #Subscribe to Digital Gripper Data Stream from Unity  
-    rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback, queue_size=1)
+    rospy.Subscriber("extend_gripper_control", GripperControl, dataCallback, queue_size=1)
     rospy.spin() 

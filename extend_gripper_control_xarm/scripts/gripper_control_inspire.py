@@ -93,7 +93,14 @@ def SplitDecimal(decimal):
 
 if __name__ == '__main__': 
     
-    (pubGripperResponse,pubGripperCommandRepublisher,gripperModbusService) = initialize()  
+    (pubGripperResponse,pubGripperCommandRepublisher,gripperModbusService) = initialize()
+
+    #Configure the Baudrate for the tool modbus
+    gripper_baudrate_service = rospy.ServiceProxy("xarm/config_tool_modbus", xarm_msgs.srv.ConfigToolModbus)
+    gripper_baudrate_config = ConfigToolModbusRequest()
+    gripper_baudrate_config.baud_rate = 115200  #Baudrate for the Robotiq grippers
+    gripper_baudrate_config.timeout_ms = 100
+    gripper_baudrate_service(gripper_baudrate_config)
 
     #Reset the Gripper
     gripperModbusData = GetSetModbusDataRequest()
@@ -105,5 +112,5 @@ if __name__ == '__main__':
     gripperModbusService(gripperModbusData) 
    
     # #Subscribe to Digital Gripper Data Stream from Unity  
-    rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback, queue_size=1)
+    rospy.Subscriber("extend_gripper_control", GripperControl, dataCallback, queue_size=1)
     rospy.spin() 

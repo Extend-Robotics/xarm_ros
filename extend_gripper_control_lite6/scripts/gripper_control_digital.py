@@ -27,6 +27,6 @@ if __name__ == '__main__':
     #Subscribe to Digital Gripper Data Stream from Unity
     #gripper_speed_service = rospy.ServiceProxy("/xarm/gripper_config", xarm_msgs.srv.GripperConfig)
     #gripper_speed_value = gripper_speed_service(5000)
-    rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback)
+    rospy.Subscriber("extend_gripper_control", GripperControl, dataCallback)
     rospy.spin()
 

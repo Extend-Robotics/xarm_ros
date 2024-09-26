@@ -37,5 +37,5 @@ def serviceCall(gripperValue):
 if __name__ == '__main__': 
     print("Starting the script to control Vacuum Gripper")
     #Subscribe to Digital Gripper Data Stream from Unity  
-    rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback)
+    rospy.Subscriber("extend_gripper_control", GripperControl, dataCallback)
     rospy.spin() 
