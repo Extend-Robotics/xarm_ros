@@ -209,6 +209,27 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-install(PROGRAMS scripts/compiled_programs/gripper_control_digital.pyc
+set(PYTHON_COMPILE_ALL "python3" "-m" "compileall" "-b")
+
+if( $ENV{ROS_PYTHON_VERSION} STREQUAL "2")
+  set(PYTHON_COMPILE_ALL "python" "-m" "compileall")
+endif()
+
+
+
+add_custom_command(
+  OUTPUT "scripts/gripper_control_digital.pyc"
+  DEPENDS "scripts/gripper_control_digital.py"
+  COMMAND ${PYTHON_COMPILE_ALL} scripts
+  COMMAND chmod +x "scripts/gripper_control_digital.pyc"
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+  COMMENT "Compiling python scripts"
+)
+
+add_custom_target(${PROJECT_NAME}_compiled_python ALL DEPENDS "scripts/gripper_control_digital.pyc")
+
+
+
+install(PROGRAMS scripts/gripper_control_digital.pyc
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
