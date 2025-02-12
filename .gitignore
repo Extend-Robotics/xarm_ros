@@ -2,4 +2,5 @@
 .idea/
 .git_template
 **/old
+*.pyc
 xarm_description/config/kinematics/user
