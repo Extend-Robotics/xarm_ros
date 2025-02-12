@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
-
-import rosnode
 import rospy
-import sys
-import copy
-import rospkg
-import extend_msgs
-from extend_msgs.msg import GripperControl, GripperResponse
-from std_msgs.msg import String
-import xarm_msgs.srv 
-
-from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
-from std_msgs.msg import Float64, Float64MultiArray, Header
+from xarm_msgs.srv import GetSetModbusDataRequest
 
 def GetForceValue(gripperModbusService):
     fingerForceValue = [0] * 6

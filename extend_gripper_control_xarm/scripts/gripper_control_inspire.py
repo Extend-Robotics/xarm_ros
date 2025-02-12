@@ -6,13 +6,12 @@ import sys
 import copy
 import rospkg
 import extend_msgs
-from extend_msgs.msg import GripperControl, GripperResponse
-from std_msgs.msg import String
+from extend_msgs.msg import GripperControl, GripperResponse, GripperSensorInfo
 import xarm_msgs.srv 
 from gripper_response_inspire import GetForceValue,GetJointValues
 
 from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
-from std_msgs.msg import Float64, Float64MultiArray, Header
+from std_msgs.msg import Header
 
 #Creating the ros node and service client
 rospy.init_node("inspire_gripper")
@@ -21,8 +20,8 @@ rospy.wait_for_service("xarm/getset_tgpio_modbus_data")
 
 def initialize():
     #Initialize the Modbus service and the response publisher
-    pubGripperResponse = rospy.Publisher('extend_gripper_response',GripperResponse,queue_size=0)
-    pubGripperCommandRepublisher = rospy.Publisher('extend_gripper_republished_command',GripperControl,queue_size=0)
+    pubGripperResponse = rospy.Publisher('extend_gripper_response',GripperResponse,queue_size=1)
+    pubGripperCommandRepublisher = rospy.Publisher('extend_gripper_republished_command',GripperControl,queue_size=1)
     gripperModbusService = rospy.ServiceProxy("xarm/getset_tgpio_modbus_data", xarm_msgs.srv.GetSetModbusData)
 
     return pubGripperResponse,pubGripperCommandRepublisher,gripperModbusService
@@ -70,6 +69,15 @@ def dataCallback(msg):
         pubGripperResponseData = GripperResponse()
         pubGripperResponseData.header = header
         pubGripperResponseData.gripperJointValues = GetJointValues(gripperModbusService)
+
+        fingerForceValues = GetForceValue(gripperModbusService)
+        pubGripperResponseData.gripperForceValues = [0] * fingerForceValues.count
+
+        for i in range(fingerForceValues.count):
+            pubGripperResponseData.gripperForceValues[i] = GripperSensorInfo()
+            pubGripperResponseData.gripperForceValues[i].gripperforceSensorVectorValues = [0]
+            pubGripperResponseData.gripperForceValues[i].gripperforceSensorVectorValues[0].x =  fingerForceValues[i]
+
         pubGripperResponseData.gripperForceValues = GetForceValue(gripperModbusService)
         pubGripperResponse.publish(pubGripperResponseData)
 

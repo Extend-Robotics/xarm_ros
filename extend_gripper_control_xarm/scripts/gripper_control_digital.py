@@ -7,8 +7,8 @@ import sys
 import copy
 import rospkg
 import extend_msgs
-from extend_msgs.msg import GripperControl
-from std_msgs.msg import String
+from extend_msgs.msg import GripperControl, GripperResponse
+from std_msgs.msg import Header
 import xarm_msgs.srv
 
 #Creating the ros node and service client
@@ -16,15 +16,39 @@ rospy.init_node("xarm_gripper")
 rospy.wait_for_service("xarm/gripper_config")
 rospy.wait_for_service("xarm/gripper_move")
 
+def initialize():
+    #Initialize the Modbus service and the response publisher
+    pubGripperCommandRepublisher = rospy.Publisher('extend_gripper_republished_command',GripperControl,queue_size=1)
+    pubGripperResponse = rospy.Publisher('extend_gripper_response',GripperResponse,queue_size=1)
+    return pubGripperCommandRepublisher,pubGripperResponse
+
+
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,850]
     gripper_value = 850 + (-850 * msg.gripperAnalog.data)
     gripper_control = rospy.ServiceProxy("xarm/gripper_move", xarm_msgs.srv.GripperMove)
     gripper_action = gripper_control(gripper_value)
+
+    header = Header()
+    header.seq = 0
+    header.frame_id = ""
+    header.stamp = rospy.Time.now()
+
+    pubGripperCommandRepublisherData = GripperControl()
+    pubGripperCommandRepublisherData = msg
+    pubGripperCommandRepublisherData.header = header
+    pubGripperCommandRepublisher.publish(pubGripperCommandRepublisherData)
+
+    #Fetching the Gripper Response Joint States and Force
+    pubGripperResponseData = GripperResponse()
+    pubGripperResponseData.header = header
+    pubGripperResponse.publish(pubGripperResponseData)
+
     
 if __name__ == '__main__': 
     #Subscribe to Digital Gripper Data Stream from Unity  
+    (pubGripperCommandRepublisher,pubGripperResponse) = initialize()  
     gripper_speed_service = rospy.ServiceProxy("xarm/gripper_config", xarm_msgs.srv.GripperConfig)
     gripper_speed_value = gripper_speed_service(5000)
-    rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback)
+    rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback, queue_size=1)
     rospy.spin() 

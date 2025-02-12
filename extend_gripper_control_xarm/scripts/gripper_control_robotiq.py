@@ -7,8 +7,8 @@ import sys
 import copy
 import rospkg
 import extend_msgs
-from extend_msgs.msg import GripperControl
-from std_msgs.msg import String
+from extend_msgs.msg import GripperControl, GripperResponse
+from std_msgs.msg import Header
 import xarm_msgs.srv 
 
 from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
@@ -17,6 +17,12 @@ from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
 rospy.init_node("robotiq_gripper")
 rospy.wait_for_service("xarm/config_tool_modbus")
 rospy.wait_for_service("xarm/getset_tgpio_modbus_data")
+
+def initialize():
+    #Initialize the Modbus service and the response publisher
+    pubGripperCommandRepublisher = rospy.Publisher('extend_gripper_republished_command',GripperControl,queue_size=1)
+    pubGripperResponse = rospy.Publisher('extend_gripper_response',GripperResponse,queue_size=1)
+    return pubGripperCommandRepublisher,pubGripperResponse
 
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,255]
@@ -30,8 +36,24 @@ def dataCallback(msg):
     gripper_modbus_data.use_503_port = False
     gripper_modbus_service(gripper_modbus_data)
 
+    header = Header()
+    header.seq = 0
+    header.frame_id = ""
+    header.stamp = rospy.Time.now()
+
+    pubGripperCommandRepublisherData = GripperControl()
+    pubGripperCommandRepublisherData = msg
+    pubGripperCommandRepublisherData.header = header
+    pubGripperCommandRepublisher.publish(pubGripperCommandRepublisherData)
+
+    #Fetching the Gripper Response Joint States and Force
+    pubGripperResponseData = GripperResponse()
+    pubGripperResponseData.header = header
+    pubGripperResponse.publish(pubGripperResponseData)    
+
 if __name__ == '__main__': 
     print("Starting the script to control Robotiq Gripper")
+    (pubGripperCommandRepublisher,pubGripperResponse) = initialize()
     #Configure the Baudrate for the tool modbus
     gripper_baudrate_service = rospy.ServiceProxy("xarm/config_tool_modbus", xarm_msgs.srv.ConfigToolModbus)
     gripper_baudrate_config = ConfigToolModbusRequest()
