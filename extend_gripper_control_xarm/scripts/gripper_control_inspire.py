@@ -13,11 +13,7 @@ from gripper_response_inspire import GetForceValue,GetJointValues
 from xarm_msgs.srv import ConfigToolModbusRequest, GetSetModbusDataRequest
 from std_msgs.msg import Header
 from geometry_msgs.msg import Vector3
-
-#Creating the ros node and service client
-rospy.init_node("inspire_gripper")
-rospy.wait_for_service("xarm/config_tool_modbus")
-rospy.wait_for_service("xarm/getset_tgpio_modbus_data")
+import os
 
 def initialize():
     #Initialize the Modbus service and the response publisher
@@ -103,12 +99,21 @@ def SplitDecimal(decimal):
 
 
 if __name__ == '__main__': 
+    #Creating the ros node and service client
+    rospy.init_node("inspire_gripper")
+
+    
+    configToolModbusServiceName = os.environ['ROS_NAMESPACE']  + "/xarm/config_tool_modbus"
+    getsetTgpioModbusDataServiceName = os.environ['ROS_NAMESPACE']  + "/xarm/getset_tgpio_modbus_data"
+
+    rospy.wait_for_service(configToolModbusServiceName)
+    rospy.wait_for_service(getsetTgpioModbusDataServiceName)
     
     (pubGripperResponse,pubGripperCommandRepublisher,gripperModbusService) = initialize()  
 
 
     #Configure the Baudrate for the tool modbus
-    gripper_baudrate_service = rospy.ServiceProxy("xarm/config_tool_modbus", xarm_msgs.srv.ConfigToolModbus)
+    gripper_baudrate_service = rospy.ServiceProxy(configToolModbusServiceName, xarm_msgs.srv.ConfigToolModbus)
     gripper_baudrate_config = ConfigToolModbusRequest()
     gripper_baudrate_config.baud_rate = 115200  #Baudrate for the Robotiq grippers
     gripper_baudrate_config.timeout_ms = 100

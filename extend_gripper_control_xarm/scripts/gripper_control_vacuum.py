@@ -9,10 +9,7 @@ import extend_msgs
 from extend_msgs.msg import GripperControl, GripperResponse
 from std_msgs.msg import Header
 import xarm_msgs.srv
-
-#Creating the ros node and service client
-rospy.init_node("xarm_gripper")
-rospy.wait_for_service("xarm/vacuum_gripper_set")
+import os
 
 isInitialValue = True 
 gripperValueReceived = False
@@ -53,10 +50,15 @@ def dataCallback(msg):
 
 def serviceCall(gripperValue): 
     print("Service Call was made")   
-    gripperControl = rospy.ServiceProxy("xarm/vacuum_gripper_set", xarm_msgs.srv.SetInt16)
+    gripperControl = rospy.ServiceProxy(vacuumGripperSetServiceName, xarm_msgs.srv.SetInt16)
     gripperAction = gripperControl(gripperValue)
     
 if __name__ == '__main__': 
+    #Creating the ros node and service client
+    rospy.init_node("xarm_gripper")
+    vacuumGripperSetServiceName = os.environ['ROS_NAMESPACE']  + "/xarm/vacuum_gripper_set"
+    rospy.wait_for_service(vacuumGripperSetServiceName)
+
     print("Starting the script to control Vacuum Gripper")
     (pubGripperCommandRepublisher,pubGripperResponse) = initialize()
     #Subscribe to Digital Gripper Data Stream from Unity  

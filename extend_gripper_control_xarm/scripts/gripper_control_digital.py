@@ -10,11 +10,9 @@ import extend_msgs
 from extend_msgs.msg import GripperControl, GripperResponse
 from std_msgs.msg import Header
 import xarm_msgs.srv
+import os
 
-#Creating the ros node and service client
-rospy.init_node("xarm_gripper")
-rospy.wait_for_service("xarm/gripper_config")
-rospy.wait_for_service("xarm/gripper_move")
+
 
 def initialize():
     #Initialize the Modbus service and the response publisher
@@ -26,7 +24,7 @@ def initialize():
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,850]
     gripper_value = 850 + (-850 * msg.gripperAnalog.data)
-    gripper_control = rospy.ServiceProxy("xarm/gripper_move", xarm_msgs.srv.GripperMove)
+    gripper_control = rospy.ServiceProxy(gripperMoveServiceName, xarm_msgs.srv.GripperMove)
     gripper_action = gripper_control(gripper_value)
 
     header = Header()
@@ -46,9 +44,20 @@ def dataCallback(msg):
 
     
 if __name__ == '__main__': 
-    #Subscribe to Digital Gripper Data Stream from Unity  
+    #Creating the ros node and service client
+    rospy.init_node("xarm_gripper")
+
+    gripperConfigServiceName = os.environ['ROS_NAMESPACE']  + "/xarm/gripper_config"
+    gripperMoveServiceName = os.environ['ROS_NAMESPACE']  + "/xarm/gripper_move"
+
+    rospy.wait_for_service(gripperConfigServiceName)
+    rospy.wait_for_service(gripperMoveServiceName)
+
+
+  
     (pubGripperCommandRepublisher,pubGripperResponse) = initialize()  
-    gripper_speed_service = rospy.ServiceProxy("xarm/gripper_config", xarm_msgs.srv.GripperConfig)
+    gripper_speed_service = rospy.ServiceProxy(gripperConfigServiceName, xarm_msgs.srv.GripperConfig)
     gripper_speed_value = gripper_speed_service(5000)
+    #Subscribe to Gripper Data Stream from Unity
     rospy.Subscriber("extend_gripper_command", GripperControl, dataCallback, queue_size=1)
     rospy.spin() 
