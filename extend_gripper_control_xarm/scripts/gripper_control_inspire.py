@@ -39,7 +39,7 @@ def dataCallback(msg):
         #gripper_modbus_service = rospy.ServiceProxy("xarm/getset_tgpio_modbus_data", xarm_msgs.srv.GetSetModbusData)
         #Commanding the Hand movement
         gripperModbusData = GetSetModbusDataRequest()
-        gripperModbusData.send_data = [0x01, 0x06, 0x05, 0xC2,
+        gripperModbusData.send_data = [0x01, 0x10, 0x05, 0xC2, 0x00, 0x06, 0x0C,
                                      highOrderLittleFinger,lowOrderLittleFinger,
                                      highOrderRingFinger,lowOrderRingFinger,
                                      highOrderMiddleFinger,lowOrderMiddleFinger,
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     
     #Reset the Gripper
     gripperModbusData = GetSetModbusDataRequest()
-    gripperModbusData.send_data = [0x01, 0x06, 0x05, 0xC2,0x00,0x00,0x03,0xE8,0x03,0xE8,0x00,0x00,0x00,0x00,0x00,0x00]
+    gripperModbusData.send_data = [0x01, 0x10, 0x05, 0xC2, 0x00, 0x06, 0x0C, 0x00,0x00,0x03,0xE8,0x03,0xE8,0x00,0x00,0x00,0x00,0x00,0x00]
     gripperModbusData.respond_len = 6
     gripperModbusData.host_id = 9
     gripperModbusData.is_transparent_transmission = False
