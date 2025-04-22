@@ -237,6 +237,6 @@ add_custom_target(${PROJECT_NAME}_compiled_python ALL DEPENDS "scripts/gripper_c
 
 
 
-install(PROGRAMS scripts/gripper_control_digital.pyc scripts/gripper_control_inspire.pyc scripts/gripper_control_robotiq.pyc scripts/gripper_control_vacuum.pyc scripts/gripper_response_inspire.pyc
+install(PROGRAMS scripts/gripper_control_digital.pyc scripts/gripper_control_inspire.pyc scripts/gripper_control_robotiq.pyc scripts/gripper_control_vacuum.pyc scripts/gripper_response_inspire.pyc scripts/gripper_control_inspire_v2.pyc
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
