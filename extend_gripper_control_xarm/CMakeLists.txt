@@ -223,15 +223,15 @@ endif()
 
 
 add_custom_command(
-  OUTPUT "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc"
-  DEPENDS "scripts/gripper_control_digital.py" "scripts/gripper_control_inspire.py" "scripts/gripper_control_robotiq.py" "scripts/gripper_control_vacuum.py" "scripts/gripper_response_inspire.py"
+  OUTPUT "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc" "scripts/gripper_control_inspire_v2.pyc"
+  DEPENDS "scripts/gripper_control_digital.py" "scripts/gripper_control_inspire.py" "scripts/gripper_control_robotiq.py" "scripts/gripper_control_vacuum.py" "scripts/gripper_response_inspire.py" "scripts/gripper_control_inspire_v2.py"
   COMMAND ${PYTHON_COMPILE_ALL} scripts
-  COMMAND chmod +x "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc"
+  COMMAND chmod +x "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc" "scripts/gripper_control_inspire_v2.pyc"
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   COMMENT "Compiling python scripts"
 )
 
-add_custom_target(${PROJECT_NAME}_compiled_python ALL DEPENDS "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc")
+add_custom_target(${PROJECT_NAME}_compiled_python ALL DEPENDS "scripts/gripper_control_digital.pyc" "scripts/gripper_control_inspire.pyc" "scripts/gripper_control_robotiq.pyc" "scripts/gripper_control_vacuum.pyc" "scripts/gripper_response_inspire.pyc" "scripts/gripper_control_inspire_v2.pyc")
 
 
 
