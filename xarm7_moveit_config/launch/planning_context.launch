@@ -30,7 +30,7 @@
 
   <!-- Load universal robot description format (URDF) -->
   <param if="$(arg load_robot_description)" name="$(arg robot_description)" 
-    command="xacro --inorder  '$(find xarm_description)/urdf/xarm_device.urdf.xacro' robot_type:=xarm dof:=7 limited:=true
+    command="xacro --inorder  '$(find xarm_description)/urdf/xarm_device.urdf.xacro' robot_type:=xarm dof:=7 limited:=false
       model1300:=$(arg model1300)
       add_realsense_d435i:=$(arg add_realsense_d435i)
       add_d435i_links:=$(arg add_d435i_links)
