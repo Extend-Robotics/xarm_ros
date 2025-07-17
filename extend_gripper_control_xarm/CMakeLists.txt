@@ -222,4 +222,3 @@ catkin_install_python(PROGRAMS
                       scripts/gripper_response_inspire.py
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
