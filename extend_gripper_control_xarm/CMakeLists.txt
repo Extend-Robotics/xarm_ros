@@ -215,11 +215,11 @@ include_directories(
 
 
 catkin_install_python(PROGRAMS
-                      gripper_control_digital.py
-                      gripper_control_inspire.py
-                      gripper_control_robotiq.py
-                      gripper_control_vacuum.py
-                      gripper_response_inspire.py
+                      scripts/gripper_control_digital.py
+                      scripts/gripper_control_inspire.py
+                      scripts/gripper_control_robotiq.py
+                      scripts/gripper_control_vacuum.py
+                      scripts/gripper_response_inspire.py
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
