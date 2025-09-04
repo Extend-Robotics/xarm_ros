@@ -70,7 +70,7 @@
   <remap from="/tf_static" to="$(arg ext_ns)/tf_static" />
   <remap from="/move_group/monitored_planning_scene" to="$(arg ext_ns)/move_group/monitored_planning_scene" />
   <remap from="source_list" to="/source_list" />
-  <include file="$(find xarm7_moveit_config)/launch/moveit_rviz_common.launch">
+  <!--include file="$(find xarm7_moveit_config)/launch/moveit_rviz_common.launch">
     <arg name="jnt_stat_source" value="[$(arg xarm_hw_ns)/joint_states]" />
     <arg name="jnt_stat_pub_rate" value="$(arg jnt_stat_pub_rate)"/>
     <arg name="show_rviz" value="$(arg show_rviz)" />
@@ -98,6 +98,6 @@
     <arg name="geometry_mesh_tcp_xyz" value="$(arg geometry_mesh_tcp_xyz)"/>
     <arg name="geometry_mesh_tcp_rpy" value="$(arg geometry_mesh_tcp_rpy)"/>
 
-  </include>
+  </include-->
 
 </launch>
