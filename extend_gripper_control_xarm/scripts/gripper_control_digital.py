@@ -23,7 +23,7 @@ def initialize():
 
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,850]
-    gripper_value = 850 + (-850 * msg.gripperAnalog.data)
+    gripper_value = 850 + (-850 * msg.gripper_analog.data)
     gripper_control = rospy.ServiceProxy(gripperMoveServiceName, xarm_msgs.srv.GripperMove)
     gripper_action = gripper_control(gripper_value)
 

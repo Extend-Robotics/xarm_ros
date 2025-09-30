@@ -22,7 +22,7 @@ def initialize():
 
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,850]
-    if msg.gripperDigital.data:
+    if msg.gripper_digital.data:
         gripperControl = rospy.ServiceProxy(closeLiteGripperServiceName, xarm_msgs.srv.Call)
         gripperAction = gripperControl()
     else:
