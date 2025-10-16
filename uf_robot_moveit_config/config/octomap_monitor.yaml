@@ -1,3 +1,0 @@
-octomap_frame: camera_link
-octomap_resolution: 0.025
-max_range: 0.8
