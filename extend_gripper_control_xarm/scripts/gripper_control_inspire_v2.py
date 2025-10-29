@@ -116,7 +116,14 @@ if __name__ == '__main__':
     gripper_baudrate_service = rospy.ServiceProxy(configToolModbusServiceName, xarm_msgs.srv.ConfigToolModbus)
     gripper_baudrate_config = ConfigToolModbusRequest()
     #gripper_baudrate_config.baud_rate = 115200  #Baudrate for the gripper
-    gripper_baudrate_config.baud_rate = int(os.getenv('gripperBaudrate', '115200'))
+default_gripper_baud = 115200
+try:
+    gripper_baud = int(os.getenv('gripperBaudrate'))
+except TypeError:
+    rospy.logwarn(f"No 'gripperBaudrate' env var found, setting to default: {default_gripper_baud}")
+    gripper_baud = default_gripper_baud
+    
+gripper_baudrate_config.baud_rate = gripper_baud
     gripper_baudrate_config.timeout_ms = 100
     gripper_baudrate_service(gripper_baudrate_config)
     
