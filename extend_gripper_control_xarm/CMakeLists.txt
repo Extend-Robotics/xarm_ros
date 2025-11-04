@@ -220,5 +220,6 @@ catkin_install_python(PROGRAMS
                       scripts/gripper_control_robotiq.py
                       scripts/gripper_control_vacuum.py
                       scripts/gripper_response_inspire.py
+                      scripts/gripper_control_inspire_v2.py
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
