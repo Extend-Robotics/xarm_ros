@@ -1,4 +1,4 @@
 - git:
     local-name: extend_msgs
     uri: https://github.com/Extend-Robotics/extend_msgs.git
-    version: master
+    version: main
