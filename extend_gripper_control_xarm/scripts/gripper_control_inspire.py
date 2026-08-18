@@ -27,14 +27,14 @@ def initialize():
 
 
 def dataCallback(msg):
-    if len(msg.handJointValues) > 0:
+    if len(msg.hand_joint_values) > 0:
         # Remaping Range [0,1] to [0,2000] and converting to high and low order bytes
-        lowOrderLittleFinger,highOrderLittleFinger = SplitDecimal(int(round(22.22*msg.handJointValues[0])))
-        lowOrderRingFinger,highOrderRingFinger = SplitDecimal(int(round(22.22*msg.handJointValues[1])))
-        lowOrderMiddleFinger,highOrderMiddleFinger = SplitDecimal(int(round(22.22*msg.handJointValues[2])))
-        lowOrderIndexFinger,highOrderIndexFinger = SplitDecimal(int(round(22.22*msg.handJointValues[3])))
-        lowOrderThumbFinger,highOrderThumbFinger = SplitDecimal(int(round(90.909*msg.handJointValues[4])))
-        lowOrderThumbBaseFinger,highOrderThumbBaseFinger = SplitDecimal(int(round(31.746*msg.handJointValues[5])))
+        lowOrderLittleFinger,highOrderLittleFinger = SplitDecimal(int(round(22.22*msg.hand_joint_values[0])))
+        lowOrderRingFinger,highOrderRingFinger = SplitDecimal(int(round(22.22*msg.hand_joint_values[1])))
+        lowOrderMiddleFinger,highOrderMiddleFinger = SplitDecimal(int(round(22.22*msg.hand_joint_values[2])))
+        lowOrderIndexFinger,highOrderIndexFinger = SplitDecimal(int(round(22.22*msg.hand_joint_values[3])))
+        lowOrderThumbFinger,highOrderThumbFinger = SplitDecimal(int(round(90.909*msg.hand_joint_values[4])))
+        lowOrderThumbBaseFinger,highOrderThumbBaseFinger = SplitDecimal(int(round(31.746*msg.hand_joint_values[5])))
 
         #gripper_modbus_service = rospy.ServiceProxy("xarm/getset_tgpio_modbus_data", xarm_msgs.srv.GetSetModbusData)
         #Commanding the Hand movement
@@ -65,18 +65,18 @@ def dataCallback(msg):
         #Fetching the Gripper Response Joint States and Force
         pubGripperResponseData = GripperResponse()
         pubGripperResponseData.header = header
-        pubGripperResponseData.gripperType = ["rInspire"]
-        pubGripperResponseData.gripperJointInfo = GripperJointInfo()
-        pubGripperResponseData.gripperJointInfo.gripperJointValues = GetJointValues(gripperModbusService)
+        pubGripperResponseData.gripper_type = ["rInspire"]
+        pubGripperResponseData.gripper_joint_info = GripperJointInfo()
+        pubGripperResponseData.gripper_joint_info.gripper_joint_values = GetJointValues(gripperModbusService)
 
         fingerForceValues = GetForceValue(gripperModbusService)
-        pubGripperResponseData.gripperSensorInfo = [0] * len(fingerForceValues)
+        pubGripperResponseData.gripper_sensor_info = [0] * len(fingerForceValues)
 
         for i in range(len(fingerForceValues)):
-            pubGripperResponseData.gripperSensorInfo[i] = GripperSensorInfo()
-            pubGripperResponseData.gripperSensorInfo[i].gripperforceSensorVectorValues = [0]
-            pubGripperResponseData.gripperSensorInfo[i].gripperforceSensorVectorValues[0] = Vector3()
-            pubGripperResponseData.gripperSensorInfo[i].gripperforceSensorVectorValues[0].x =  fingerForceValues[i]
+            pubGripperResponseData.gripper_sensor_info[i] = GripperSensorInfo()
+            pubGripperResponseData.gripper_sensor_info[i].gripper_force_sensor_vector_values = [0]
+            pubGripperResponseData.gripper_sensor_info[i].gripper_force_sensor_vector_values[0] = Vector3()
+            pubGripperResponseData.gripper_sensor_info[i].gripper_force_sensor_vector_values[0].x =  fingerForceValues[i]
 
         pubGripperResponse.publish(pubGripperResponseData)
 

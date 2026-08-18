@@ -22,7 +22,7 @@ def initialize():
 
 def dataCallback(msg):
     # Remaping Range [0,1] to [0,255]
-    gripper_value = 255 * msg.gripperAnalog.data
+    gripper_value = 255 * msg.gripper_analog.data
     gripper_modbus_service = rospy.ServiceProxy(getsetTgpioModbusDataServiceName, xarm_msgs.srv.GetSetModbusData)
     gripper_modbus_data = GetSetModbusDataRequest()
     gripper_modbus_data.send_data = [0x09, 0x10, 0x03, 0xE8, 0x00, 0x03, 0x06, 0x09, 0x00, 0x00, gripper_value, 0xFF, 0xFF]

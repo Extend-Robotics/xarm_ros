@@ -26,11 +26,11 @@ def dataCallback(msg):
     global isInitialValue, gripperValueReceived
     if(isInitialValue):
         isInitialValue = False
-        gripperValueReceived = msg.gripperDigital.data
+        gripperValueReceived = msg.gripper_digital.data
         serviceCall(gripperValueReceived)
     else:
-        if(gripperValueReceived != msg.gripperDigital.data):
-            gripperValueReceived = msg.gripperDigital.data
+        if(gripperValueReceived != msg.gripper_digital.data):
+            gripperValueReceived = msg.gripper_digital.data
             serviceCall(gripperValueReceived)
 
     header = Header()
