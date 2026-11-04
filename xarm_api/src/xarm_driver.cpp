@@ -168,6 +168,7 @@ void XArmDriver::_init_service(void)
   gripper_config_server_ = nh_.advertiseService("gripper_config", &XArmDriver::GripperConfigCB, this);
   gripper_move_server_ = nh_.advertiseService("gripper_move", &XArmDriver::GripperMoveCB, this);
   gripper_state_server_ = nh_.advertiseService("gripper_state", &XArmDriver::GripperStateCB, this);
+  gripper_clean_err_server_ = nh_.advertiseService("gripper_clean_err", &XArmDriver::GripperCleanErrCB, this);
 
   set_vacuum_gripper_server_ = nh_.advertiseService("vacuum_gripper_set", &XArmDriver::VacuumGripperCB, this);
 
@@ -1167,6 +1168,13 @@ bool XArmDriver::GripperConfigCB(xarm_msgs::GripperConfig::Request &req, xarm_ms
 
   res.ret = (ret1 == 0 && ret2 == 0) ? ret3 : (ret1 == 0 && ret3 == 0) ? ret2 : ret1;
   res.message = "gripper_config, ret = " + std::to_string(res.ret);
+  return true;
+}
+
+bool XArmDriver::GripperCleanErrCB(xarm_msgs::Call::Request &req, xarm_msgs::Call::Response &res)
+{
+  res.ret = arm->clean_gripper_error();
+  res.message = "clean_gripper_error, ret = " + std::to_string(res.ret);
   return true;
 }
 

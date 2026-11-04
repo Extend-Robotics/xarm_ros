@@ -45,6 +45,7 @@ public:
   bool GripperConfigCB(xarm_msgs::GripperConfig::Request &req, xarm_msgs::GripperConfig::Response &res);
   bool GripperMoveCB(xarm_msgs::GripperMove::Request &req, xarm_msgs::GripperMove::Response &res);
   bool GripperStateCB(xarm_msgs::GripperState::Request &req, xarm_msgs::GripperState::Response &res);
+  bool GripperCleanErrCB(xarm_msgs::Call::Request &req, xarm_msgs::Call::Response &res);
   bool VacuumGripperCB(xarm_msgs::SetInt16::Request &req, xarm_msgs::SetInt16::Response &res);
   bool SetModbusCB(xarm_msgs::SetToolModbus::Request &req, xarm_msgs::SetToolModbus::Response &res);
   bool ConfigModbusCB(xarm_msgs::ConfigToolModbus::Request &req, xarm_msgs::ConfigToolModbus::Response &res);
@@ -166,6 +167,7 @@ private:
   ros::ServiceServer gripper_config_server_;
   ros::ServiceServer gripper_move_server_;
   ros::ServiceServer gripper_state_server_;
+  ros::ServiceServer gripper_clean_err_server_;
   ros::ServiceServer set_vacuum_gripper_server_;
   ros::ServiceServer set_modbus_server_;
   ros::ServiceServer config_modbus_server_;
